@@ -63,19 +63,21 @@
       <div class="col-md-12">
         <table class="table table-striped">
           <thead>
-            <tr>
+            <tr style="font-size: 17px;">              
+              <div>
               <th>ID</th>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Email</th>
-              <th>Gender</th>
-              <th>Date of Birth</th>
-              <th>Mobile</th>
-              <th>State</th>
-              <th>City</th>
-              <th>Files</th>
-              <th width="100">Edit</th>
-              <th width="100">Delete</th>
+              <th>FIRST NAME</th>
+              <th>LAST NAME</th>
+              <th>EMAIL</th>
+              <th>GENDER</th>
+              <th>DATE OF BIRTH</th>
+              <th>MOBILE</th>
+              <th>STATE</th>
+              <th>CITY</th>
+              <th>FILES</th>
+              
+              <th width="100" class="text-center">ACTIONS</th>
+              </div>
             </tr>
           </thead>
           <tbody>
@@ -86,21 +88,22 @@
                   <td><?php echo $user['firstname']; ?></td>
                   <td><?php echo $user['lastname']; ?></td>
                   <td><?php echo $user['email']; ?></td>
-                  <td><?php echo ucfirst($user['gender']); ?></td>
+                  <td><?php echo $user['gender']; ?></td>
                   <td><?php echo $user['dob']; ?></td>
                   <td><?php echo $user['mobile']; ?></td>
                   <td><?php echo $user['state_name']; ?></td>
                   <td><?php echo $user['city_name']; ?></td>
-                  <td><img src="<?php echo base_url('uploads/' . $user['profile_picture']); ?>" alt="Profile Picture"
-                      style="width: 10px; height: 10px;">
+                  <td><img src="<?php echo base_url('./uploads/' . $user['profile_picture']); ?>" alt="Profile Picture"
+                      style="width: 50px; height: 50px;">
                   </td>
                   <td>
+                    <div class="d-flex">
                     <a href="<?php echo base_url() . 'index.php/user/edit/' . $user['user_id']; ?>"
-                      class="btn btn-primary">Edit</a>
-                  </td>
-                  <td>
+                      class="btn btn-primary me-1">Edit</a>
+                  
                     <a href="<?php echo base_url() . 'index.php/user/delete/' . $user['user_id']; ?>"
                       class="btn btn-danger">Delete</a>
+                      </div>
                   </td>
                 </tr>
               <?php }

@@ -20,7 +20,8 @@
 <div class="container" style="padding-top : 10px;">
   <h3>Edit Customer Details</h3>
 
-  <form method="post" name="createUser" action="<?php echo base_url() . 'index.php/user/edit/' . $user['user_id']; ?>">
+  <form method="post" name="createUser" action="<?php echo base_url() . 'index.php/user/edit/' . $user['user_id']; ?>"
+    enctype="multipart/form-data">
     <div class="row">
 
       <div class="col-md-6">
@@ -108,7 +109,7 @@
           <!-- File Upload -->
           <div class="form-group" style="margin-bottom:10px">
             <label for="file">Upload File</label>
-            <input type="file" name="fileupload" value="<?php echo set_value('file'); ?>"
+            <input type="file" name="file" value="<?php echo set_value('file', $user['profile_picture']); ?>"
               class="form-control">
             <?php echo form_error('file'); ?>
           </div>
