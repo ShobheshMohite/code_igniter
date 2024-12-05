@@ -40,7 +40,6 @@ class User extends CI_Controller
         $this->upload->initialize($config);
         // print_r($this->upload->do_upload('file'));
         // exit;
-        
         if (!$this->upload->do_upload('file'))
           $this->upload->display_errors();
         else {
