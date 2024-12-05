@@ -9,7 +9,6 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 
-<!-- -->
 
 <div class="navbar navbar-dark bg-dark">
   <div class="container">

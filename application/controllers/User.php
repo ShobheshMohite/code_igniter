@@ -7,6 +7,8 @@ class User extends CI_Controller
     $users = $this->User_model->all();
     $data = array();
     $data['users'] = $users;
+    $data['states'] = $this->User_model->getStates(); // Fetch states for the dropdown
+    $data['cities'] = $this->User_model->getCities(); // Fetch cities
     $this->load->view('list', $data);
   }
 
@@ -31,11 +33,14 @@ class User extends CI_Controller
         $name_array = '';
         $config['upload_path'] = './uploads/';
         $config['allowed_types'] = 'gif|jpg|jpeg|png|bmp';
-        $config['max_size'] = '1000';
-        $config['max_width'] = '1280';
-        $config['max_height'] = '1280';
+        // $config['max_size'] = '1000';
+        // $config['max_width'] = '1280';
+        // $config['max_height'] = '1280';
         $this->load->library('upload');
         $this->upload->initialize($config);
+        // print_r($this->upload->do_upload('file'));
+        // exit;
+        
         if (!$this->upload->do_upload('file'))
           $this->upload->display_errors();
         else {
@@ -74,10 +79,9 @@ class User extends CI_Controller
     }
   }
 
-
-
   public function edit($userId)
   {
+    
     $this->load->model('User_model');
     $user = $this->User_model->getUser($userId);
     $data = array();
@@ -113,20 +117,21 @@ class User extends CI_Controller
       if (!empty($_FILES['file']['name'])) {
         $config['upload_path'] = './uploads/';
         $config['allowed_types'] = 'gif|jpg|jpeg|png|bmp';
-        $config['max_size'] = '1000';
-        $config['max_width'] = '1280';
-        $config['max_height'] = '1280';
+        // $config['max_size'] = '1000';
+        // $config['max_width'] = '1280';
+        // $config['max_height'] = '1280';
 
         $this->load->library('upload');
         $this->upload->initialize($config);
 
         if (!$this->upload->do_upload('file')) {
-          $error = $this->upload->upload_errors();
+          $error = $this->upload->display_errors();
           $this->session->set_flashdata('error', $error);
-          redirect(base_url() . 'index.php/user.edit/' . $userId);
+          redirect(base_url() . 'index.php/user/edit/' . $userId);
         } else {
           $fInfo = $this->upload->data(); // File uploaded successfully
           $this->gallery_path = realpath(APPPATH . '../uploads'); // Fetch path
+
 
           // Generate thumbnail
           $config1 = array(
@@ -159,6 +164,16 @@ class User extends CI_Controller
     }
   }
 
+
+  function getUserData($userId)
+  {
+    $this->load->model('User_model');
+    $user = $this->User_model->getUser($userId);
+
+    echo json_encode($user);
+    // print_r($user);
+  }
+
   public function delete($userId)
   {
     $this->load->model('User_model');
@@ -170,6 +185,14 @@ class User extends CI_Controller
     $this->User_model->deleteUser($userId);
     $this->session->set_flashdata('success_delete', 'Record Deleted Successfully');
     redirect(base_url() . 'index.php/user/index');
+  }
+
+  public function getStates()
+  {
+    $this->load->model('User_model');
+    $states = $this->User_model->getStates();
+    echo json_encode($states);
+
   }
 
   public function getCitiesByState($stateId)

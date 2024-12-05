@@ -123,10 +123,10 @@
             type: 'GET',
             dataType: 'json',
             success: function (data) {
-              $('#city').empty(); // Clear
+              $('#city').empty(); 
               $('#city').append('<option value="">Select City</option>');
 
-              // Populate the city dropdown
+              //city dropdown
               $.each(data, function (key, city) {
                 $('#city').append('<option value="' + city.id + '">' + city.name + '</option>');
               });

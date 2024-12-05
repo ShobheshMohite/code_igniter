@@ -48,5 +48,10 @@ class User_model extends CI_Model
     return $query->result_array();
   }
 
+  public function getCities()
+  {
+    $query = $this->db->get('cities');
+    return $query->result_array();
+  }
 }
 ?>
