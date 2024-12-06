@@ -1,6 +1,11 @@
 <?php
 class User extends CI_Controller
 {
+  public function login()
+  {
+
+    $this->load->view('login');
+  }
   public function index()
   {
     $this->load->model("User_model");
@@ -27,7 +32,7 @@ class User extends CI_Controller
     $this->form_validation->set_rules("city", "City", "required");
 
     if ($this->form_validation->run() == FALSE) {
-      $this->load->view('create', $data);
+      $this->load->view('list', $data);
     } else {
       if (!empty($_FILES['file']['name'])) {
         $name_array = '';
@@ -40,9 +45,12 @@ class User extends CI_Controller
         $this->upload->initialize($config);
         // print_r($this->upload->do_upload('file'));
         // exit;
-        if (!$this->upload->do_upload('file'))
+        if (!$this->upload->do_upload('file')) {
           $this->upload->display_errors();
-        else {
+          $this->session->set_flashdata('fileError', 'Unable to upload file due to unsupported file format..');
+          redirect(base_url() . 'index.php/user/index');
+
+        } else {
           $fInfo = $this->upload->data(); //uploading
           $this->gallery_path = realpath(APPPATH . '../uploads');//fetching path
           $config1 = array(
@@ -125,8 +133,8 @@ class User extends CI_Controller
 
         if (!$this->upload->do_upload('file')) {
           $error = $this->upload->display_errors();
-          $this->session->set_flashdata('error', $error);
-          redirect(base_url() . 'index.php/user/edit/' . $userId);
+          $this->session->set_flashdata('fileError', 'Unable to upload file due to unsupported file format..');
+          redirect(base_url() . 'index.php/user/index');
         } else {
           $fInfo = $this->upload->data(); // File uploaded successfully
           $this->gallery_path = realpath(APPPATH . '../uploads'); // Fetch path

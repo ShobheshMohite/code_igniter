@@ -13,9 +13,13 @@ class User_model extends CI_Model
       $this->db->join('states', 'users.state_id = states.id', 'left');
       $this->db->join('cities', 'users.city_id = cities.id', 'left');
       $query = $this->db->get();
-      return $query->result_array();
+      return $query->result_array();  
   }
   
+
+  function getIdPass(){
+
+  }
 
   function getUser($userId)
   {

@@ -9,13 +9,21 @@
 
 <div class="navbar navbar-dark bg-dark">
   <div class="container">
-    <a href="<?php echo base_url() . 'index.php/user/create/' ?>" class="navbar-brand">Customer Information
+    <a href="<?php echo base_url() . 'index.php/user/' ?>" class="navbar-brand">Customer Information
       App</a>
   </div>
 </div>
 <div class="container" style="padding-top: 10px;">
   <div class="row">
     <div class="col-md-12">
+      <?php
+      $fileError = $this->session->flashdata('fileError');
+      if ($fileError) {
+        ?>
+              <div class="alert alert-danger"><?php echo $fileError; ?></div>
+              <?php
+      }
+      ?>
       <?php
       $success = $this->session->flashdata('success');
       if ($success) {
@@ -61,7 +69,7 @@
     <div class="col-md-12">
       <table class="table table-striped">
         <thead>
-          <tr style="font-size: 17px;">
+          <tr style="font-size: 15px;">
             <div>
               <th>ID</th>
               <th>FIRST NAME</th>
@@ -92,8 +100,8 @@
                 <td><?php echo $user['mobile']; ?></td>
                 <td><?php echo $user['state_name']; ?></td>
                 <td><?php echo $user['city_name']; ?></td>
-                <td><img src="<?php echo base_url('uploads/' . $user['profile_picture']); ?>" alt="Profile Picture"
-                    style="width: 50px; height: 50px;">
+                <td><img src="<?php echo base_url('uploads/' . $user['profile_picture'] ); ?>" alt="Profile Picture"
+                    style="width: 50px; height: 50px;" class="rounded">
                 </td>
                 <td>
                   <div class="d-flex">
@@ -123,10 +131,11 @@
 <!-- Delete Modal -->
 <div class="modal fade" id="deletedata" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
   aria-labelledby="deletedataLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="deletedataLabel">Are You Sure ? Click Delete Button To Confirm..</h1>
+        <h1 class="modal-title fs-5" id="deletedataLabel">Are You Sure ? Click Delete Button To
+          Confirm.</h1>
         <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
       </div>
       <div class="modal-body">
@@ -150,10 +159,10 @@
 <!-- Edit Modal -->
 <div class="modal fade" id="editdata" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
   aria-labelledby="editdataLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="editdataLabel">Update Details</h1>
+        <h1 class="modal-title fs-5 " id="editdataLabel">Update User Details</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -215,7 +224,7 @@
               <!-- State -->
               <div class="form-group">
                 <label for="state">State</label>
-                <select name="state" id="stateEdit" class="form-control" onchange="getCities()">
+                <select name="state" id="stateEdit" class="form-control" onchange="getCitiesEdit()">
                   <option value="">Select State</option>
                   <?php foreach ($states as $state): ?>
                     <option value="<?php echo $state['id']; ?>" <?php echo set_select('state', $state['id'], $state['id'] == $user['state_id']); ?>>
@@ -267,7 +276,7 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="createdataLabel">Update Details</h1>
+        <h1 class="modal-title fs-5" id="createdataLabel">Create New Entry</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -319,9 +328,8 @@
               <!-- Mobile Number -->
               <div class="form-group">
                 <label for="mobile">Mobile Number</label>
-                <input type="text" name="mobile" placeholder="Enter 10 Digit Mobile Number" value=""
-                  class="form-control" maxlength="10">
-
+                <input type="tel" name="mobile" pattern="[/^(?!0{10})[0-9]{10}$/]" placeholder="Enter 10 Digit Mobile Number" value="" class="form-control"
+                  maxlength="10">
               </div>
             </div>
             <div class="col-md-6 mb-3">
@@ -363,8 +371,8 @@
               </div>
             </div>
             <div class="form-group text-end">
-              <button class="btn btn-primary">Update</button>
-              <button data-bs-dismiss="modal" class="btn-secondary btn">Cancel</button>
+              <button class="btn btn-primary">Create</button>
+              <button data-bs-dismiss="modal" class="btn-danger btn">Cancel</button>
             </div>
           </div>
         </form>
@@ -387,6 +395,27 @@
         console.log(obj);
 
         let city = document.getElementById('city');
+        city.innerHTML = '';
+
+        obj.forEach(element => {
+          city.innerHTML += '<option value="' + element.id + '">' + element.name + '</option>';
+        });
+      }
+    })
+
+  }
+
+  function getCitiesEdit() {
+    const stateId = document.getElementById('stateEdit').value; // Get the selected state ID
+    console.log(stateId);
+
+    $.ajax({
+      url: "<?php echo base_url() ?>index.php/user/getCitiesByState/" + stateId,
+      success: function (data) {
+        let obj = jQuery.parseJSON(data);
+        console.log(obj);
+
+        let city = document.getElementById('cityEdit');
         city.innerHTML = '';
 
         obj.forEach(element => {
@@ -434,6 +463,8 @@
         img.src = '';
         if (obj.profile_picture != null) {
           img.src = "<?php echo base_url(); ?>uploads/" + obj.profile_picture
+        }else{
+          img.src = "<?php echo base_url(); ?>uploads/users-vector-icon-png_260862.jpg" 
         }
         // profile_picture
 
