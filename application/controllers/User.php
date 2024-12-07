@@ -16,7 +16,7 @@ class User extends CI_Controller
 
     $config['base_url'] = base_url('index.php/user/index');
     $config['total_rows'] = $this->User_model->countAllUsers();
-    $config['per_page'] = 5;
+    $config['per_page'] = 1;
     $config['uri_segment'] = 3;
 
 
@@ -251,5 +251,6 @@ class User extends CI_Controller
     $cities = $this->User_model->getCitiesByState($stateId);
     echo json_encode($cities); // Return cities in JSON
   }
+
 }
 ?>

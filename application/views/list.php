@@ -88,7 +88,7 @@
         </thead>
         <tbody>
           <?php if (!empty($users)) {
-            $cnt = $page + 1;
+            $cnt = (int) $page + 1;
             foreach ($users as $user) { ?>
               <tr>
                 <td class="user_id"><?php echo $cnt++; ?></td>
@@ -129,6 +129,7 @@
     </div>
   </div>
 </div>
+
 
 <!-- Delete Modal -->
 <div class="modal fade" id="deletedata" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -231,7 +232,7 @@
                 <select name="state" id="stateEdit" class="form-select" onchange="getCitiesEdit()">
                   <option value="">Select State</option>
                   <?php foreach ($states as $state): ?>
-                    <option value="<?php echo $state['id']; ?>" <?php echo set_select('state', $state['id'], $state['id'] == $user['state_id']); ?>>
+                                                <option value="<?php echo $state['id']; ?>" <?php echo $state['id'] == $user['state_id'] ? 'selected' : ''; ?>>
                       <?php echo $state['name']; ?>
                     </option>
                   <?php endforeach; ?>
@@ -247,7 +248,7 @@
                   <option value="">Select City</option>
                   <?php foreach ($cities as $city): ?>
                                 <!-- <?php if ($city['state_id'] == $user['state_id']): ?> -->
-                      <option value="<?php echo $city['id']; ?>" <?php echo set_select('state', $city['id'], $city['id'] == $user['state_id']); ?>>
+                      <option value="<?php echo $city['id']; ?>" <?php echo $city['id'] == $user['city_id'] ? 'selected' : ''; ?>>
                         <?php echo $city['name']; ?>
                       </option>
                       <!-- <?php endif; ?> -->
@@ -265,8 +266,8 @@
               </div>
             </div>
             <div class="form-group text-end">
-              <button class="btn btn-primary">Update</button>
-              <button data-bs-dismiss="modal" class="btn-secondary btn">Cancel</button>
+              <button type="submit" class="btn btn-primary">Update</button>
+              <button type="button" data-bs-dismiss="modal" class="btn-danger btn">Cancel</button>
             </div>
           </div>
         </form>
@@ -347,6 +348,7 @@
                 <select name="state" id="state" class="form-select" onchange="getCities()">
                   <option value="" selected>Select State</option>
                   <?php foreach ($states as $state): ?>
+
                     <option value="<?php echo $state['id']; ?>">
                       <?php echo $state['name']; ?>
                     </option>
@@ -379,8 +381,8 @@
               </div>
             </div>
             <div class="form-group text-end">
-              <button class="btn btn-primary">Create</button>
-              <button data-bs-dismiss="modal" class="btn-danger btn">Cancel</button>
+              <button type="submit" class="btn btn-primary">Create</button>
+              <button type="button" data-bs-dismiss="modal" class="btn-danger btn">Cancel</button>
             </div>
           </div>
         </form>
@@ -391,6 +393,136 @@
 
 
 <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Dropdown Elements
+    const stateDropDown = document.getElementById("state");
+    const cityDropDown = document.getElementById("city");
+    const stateEditDropDown = document.getElementById("stateEdit");
+    const cityEditDropDown = document.getElementById("cityEdit");
+
+    // Enable/Disable City Dropdown Based on State Selection
+    const toggleCityDropdown = (stateElement, cityElement) => {
+      if (stateElement.value) {
+        cityElement.disabled = false;
+      } else {
+        cityElement.disabled = true;
+        cityElement.innerHTML = '<option value="">Select City</option>'; // Clear cities
+      }
+    };
+
+    // Event Listener for State Dropdown (Create User)
+    if (stateDropDown && cityDropDown) {
+      stateDropDown.addEventListener("change", function () {
+        toggleCityDropdown(stateDropDown, cityDropDown);
+        getCities();
+      });
+    }
+
+    // Event Listener for State Dropdown (Edit User)
+    if (stateEditDropDown && cityEditDropDown) {
+      stateEditDropDown.addEventListener("change", function () {
+        toggleCityDropdown(stateEditDropDown, cityEditDropDown);
+        getCitiesEdit();
+      });
+    }
+
+    // Fetch Cities Based on State Selection
+    function getCities() {
+      const stateId = stateDropDown.value;
+      if (stateId) {
+        $.ajax({
+          url: "<?php echo base_url() ?>index.php/user/getCitiesByState/" + stateId,
+          success: function (data) {
+            const cities = JSON.parse(data);
+            cityDropDown.innerHTML = '<option value="">Select City</option>'; // Clear old options
+            cities.forEach((city) => {
+              cityDropDown.innerHTML += `<option value="${city.id}">${city.name}</option>`;
+            });
+          },
+          error: function () {
+            alert("Unable to fetch cities. Please try again.");
+          },
+        });
+      }
+    }
+
+    function getCitiesEdit() {
+      const stateId = stateEditDropDown.value;
+      if (stateId) {
+        $.ajax({
+          url: "<?php echo base_url() ?>index.php/user/getCitiesByState/" + stateId,
+          success: function (data) {
+            const cities = JSON.parse(data);
+            cityEditDropDown.innerHTML = '<option value="">Select City</option>'; // Clear old options
+            cities.forEach((city) => {
+              cityEditDropDown.innerHTML += `<option value="${city.id}">${city.name}</option>`;
+            });
+          },
+          error: function () {
+            alert("Unable to fetch cities. Please try again.");
+          },
+        });
+      }
+    }
+
+    // Populate Edit Modal with User Data
+    window.getUserData = function (userId) {
+      $.ajax({
+        url: "<?php echo base_url() ?>index.php/user/getUserData/" + userId,
+        success: function (data) {
+          const user = JSON.parse(data);
+
+          // Populate Form Fields
+          $("#firstnameEdit").val(user.firstname);
+          $("#lastnameEdit").val(user.lastname);
+          $("#emailEdit").val(user.email);
+          $("#dobEdit").val(user.dob);
+          $("#mobileEdit").val(user.mobile);
+          $("#stateEdit").val(user.state_id);
+
+          let male = document.getElementById('maleEdit');
+          let female = document.getElementById('femaleEdit');
+
+          //gender
+          if (user.gender == "Male") {
+            male.checked = true;
+          } else if (user.gender == "Female") {
+            female.checked = true;
+          }
+
+          // Set Profile Picture
+          let img = document.getElementById("showImageEdit");
+          img.src = user.profile_picture
+            ? "<?php echo base_url(); ?>uploads/" + user.profile_picture
+            : "";
+
+          // Update Form Action
+          $("#formId").attr("action", "edit/" + userId);
+
+          // Fetch Cities for the Selected State
+          getCitiesEdit();
+
+          // Preselect the User's City Once Loaded
+          setTimeout(() => {
+            $("#cityEdit").val(user.city_id);
+          }, 100); // Add a slight delay to ensure cities are loaded
+        },
+        error: function () {
+          alert("Unable to fetch user data. Please try again.");
+        },
+      });
+    };
+  });
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+  crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<!-- <script>
+
+
 
   // create Dropdown
 
@@ -411,21 +543,21 @@
   })
 
   // Edit Dropdown
-    // document.addEventListener("DOMContentLoaded",function (params) {
-    //   const stateDropDown =document.getElementById("stateEdit");
-    //   const cityDropDown =document.getElementById("cityEdit");
+  document.addEventListener("DOMContentLoaded", function (params) {
+    const stateDropDown = document.getElementById("stateEdit");
+    const cityDropDown = document.getElementById("cityEdit");
 
-    //   stateDropDown.addEventListener("change",function (params) {
-    //     const selectedState = this.value;
+    stateDropDown.addEventListener("change", function (params) {
+      const selectedState = this.value;
 
-        // //enable states on cond.
-        // if(selectedState){
-        //   cityDropDown.disabled =false;
-        // }else{
-        //   cityDropDown.disabled =true;
-        // }
-    //   })
-    // })
+      //enable states on cond.
+      if (selectedState) {
+        cityDropDown.disabled = false;
+      } else {
+        cityDropDown.disabled = true;
+      }
+    })
+  })
 
   function getCities() {
     const stateId = document.getElementById('state').value; // Get the selected state ID
@@ -448,27 +580,59 @@
 
   }
 
+  // function getCitiesEdit() {
+  //   const stateId = document.getElementById('stateEdit').value; // Get the selected state ID
+  //   console.log(stateId);
+
+  //   $.ajax({
+  //     url: "<?php echo base_url() ?>index.php/user/getCitiesByState/" + stateId,
+  // success: function (data) {
+  // let obj = jQuery.parseJSON(data);
+  // console.log(obj);
+  
+  // let city = document.getElementById('cityEdit');
+  // city.innerHTML = '';
+  
+  // obj.forEach(element => {
+  // city.innerHTML += '<option value="' + element.id + '">' + element.name + '</option>';
+  // });
+  // }
+  // })
+  
+  // }
+
   function getCitiesEdit() {
-          const stateId = document.getElementById('stateEdit').value; // Get the selected state ID
-          console.log(stateId);
+    const stateId = document.getElementById("stateEdit").value; // Get selected state ID
 
-          $.ajax({
-            url: "<?php echo base_url() ?>index.php/user/getCitiesByState/" + stateId,
-            success: function (data) {
-              let obj = jQuery.parseJSON(data);
-              console.log(obj);
+    if (stateId) {
+        // Make AJAX request to get cities for the selected state
+        $.ajax({
+            url: "<?php echo base_url('index.php/user/getCitiesByState'); ?>", // Adjust your URL as needed
+            type: "POST",
+            data: { state_id: stateId },
+            dataType: "json",
+            success: function (cities) {
+            // Clear the city dropdown
+            const citySelect = document.getElementById("cityEdit");
+            citySelect.innerHTML = '<option value="">Select City</option>';
 
-              let city = document.getElementById('cityEdit');
-              city.innerHTML = '';
-
-              obj.forEach(element => {
-                city.innerHTML += '<option value="' + element.id + '">' + element.name + '</option>';
-              });
-            }
-          })
-
-        }
-        
+                // Populate the city dropdown with the new cities
+                cities.forEach(function (city) {
+                    const option = document.createElement("option");
+                    option.value = city.id;
+                    option.textContent = city.name;
+                    citySelect.appendChild(option);
+                });
+            },
+            error: function () {
+                alert("Unable to fetch cities. Please try again.");
+            },
+        });
+    } else {
+        // If no state is selected, clear the city dropdown
+        document.getElementById("cityEdit").innerHTML = '<option value="">Select City</option>';
+    }
+}
 
 
   function getUserData(userId) {
@@ -490,7 +654,7 @@
           female.checked = true;
         }
 
-        
+
         $("#firstnameEdit").val(obj.firstname);
         $("#lastnameEdit").val(obj.lastname);
         $("#emailEdit").val(obj.email);
@@ -513,7 +677,5 @@
     });
   }
 
-</script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-  crossorigin="anonymous"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</script> -->
+
