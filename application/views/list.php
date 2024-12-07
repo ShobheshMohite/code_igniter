@@ -21,7 +21,7 @@
       if ($fileError) {
         ?>
               <div class="alert alert-danger"><?php echo $fileError; ?></div>
-              <?php
+            <?php
       }
       ?>
       <?php
@@ -88,7 +88,7 @@
         </thead>
         <tbody>
           <?php if (!empty($users)) {
-            $cnt = 1;
+            $cnt = $page + 1;
             foreach ($users as $user) { ?>
               <tr>
                 <td class="user_id"><?php echo $cnt++; ?></td>
@@ -100,7 +100,7 @@
                 <td><?php echo $user['mobile']; ?></td>
                 <td><?php echo $user['state_name']; ?></td>
                 <td><?php echo $user['city_name']; ?></td>
-                <td><img src="<?php echo base_url('uploads/' . $user['profile_picture'] ); ?>" alt="Profile Picture"
+                <td><img src="<?php echo base_url('uploads/' . $user['profile_picture']); ?>" alt="Profile Picture"
                     style="width: 50px; height: 50px;" class="rounded">
                 </td>
                 <td>
@@ -122,8 +122,10 @@
               <td colspan="11" class="text-center">No Records Found</td>
             </tr>
           <?php } ?>
+
         </tbody>
       </table>
+      <?php echo $pagination_links; ?>
     </div>
   </div>
 </div>
@@ -172,79 +174,83 @@
             <div class="col-md-6 mb-3">
               <!--     -->
               <div class="form-group">
-                <label for="firstname">First Name</label>
+                <label for="firstname">First Name*</label>
                 <input type="text" name="firstname" id="firstnameEdit" placeholder="Enter First Name" value=""
-                  class="form-control">
+                  class="form-control" required>
               </div>
             </div>
             <div class="col-md-6 mb-3">
               <div class="form-group">
-                <label for="lastname">Last Name</label>
+                <label for="lastname">Last Name*</label>
                 <input type="text" name="lastname" id="lastnameEdit" placeholder="Enter Last Name" value=""
-                  class="form-control">
+                  class="form-control" required>
               </div>
             </div>
 
             <div class="col-md-6 mb-3">
               <div class="form-group" style="padding-bottom: 10px">
-                <label for="email">Email</label>
-                <input type="email" name="email" id="emailEdit" placeholder="Enter Email" value="" class="form-control">
+                <label for="email">Email*</label>
+                <input type="email" name="email" id="emailEdit" placeholder="Enter Email" value="" class="form-control"
+                  required>
 
               </div>
             </div>
             <div class="col-md-6 mb-3">
               <!-- Gender -->
               <div class="form-group">
-                <label for="gender">Gender</label><br>
+                <label for="gender">Gender*</label><br>
 
-                <input type="radio" name="gender" id="maleEdit" value="Male">
+                <input type="radio" name="gender" id="maleEdit" value="Male" required>
                 Male
 
-                <input type="radio" name="gender" id="femalEdit" value="Female">
+                <input type="radio" name="gender" id="femalEdit" value="Female" required>
                 Female<br>
               </div>
             </div>
             <div class="col-md-6 mb-3">
               <!-- DOB-->
               <div class="form-group">
-                <label for="dob">Date of Birth</label>
-                <input type="date" name="dob" id="dobEdit" class="form-control" max="<?php echo date('Y-m-d'); ?>">
+                <label for="dob">Date of Birth*</label>
+                <input type="date" name="dob" id="dobEdit" class="form-control" max="<?php echo date('Y-m-d'); ?>" required>
               </div>
             </div>
             <div class="col-md-6 mb-3">
               <!-- Mobile Number -->
               <div class="form-group">
-                <label for="mobile">Mobile Number</label>
-                <input type="text" name="mobile" id="mobileEdit" placeholder="Enter 10 Digit Mobile Number" value=""
-                  class="form-control" maxlength="10">
+                <label for="mobile">Mobile Number*</label>
+                <input type="text" name="mobile" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                  id="mobileEdit" placeholder="Enter 10 Digit Mobile Number" value="" class="form-control"
+                  maxlength="10" required>
 
               </div>
             </div>
             <div class="col-md-6 mb-3">
               <!-- State -->
               <div class="form-group">
-                <label for="state">State</label>
-                <select name="state" id="stateEdit" class="form-control" onchange="getCitiesEdit()">
+                <label for="state">State*</label>
+                <select name="state" id="stateEdit" class="form-select" onchange="getCitiesEdit()">
                   <option value="">Select State</option>
                   <?php foreach ($states as $state): ?>
                     <option value="<?php echo $state['id']; ?>" <?php echo set_select('state', $state['id'], $state['id'] == $user['state_id']); ?>>
                       <?php echo $state['name']; ?>
                     </option>
                   <?php endforeach; ?>
-                </select>
+                </select required>
 
               </div>
             </div>
             <div class="col-md-6 mb-3">
               <!-- City-->
               <div class="form-group" style="padding-bottom:10px">
-                <label for="city">City</label>
-                <select name="city" id="cityEdit" class="form-control">
+                <label for="city">City*</label>
+                <select name="city" id="cityEdit" class="form-select">
                   <option value="">Select City</option>
                   <?php foreach ($cities as $city): ?>
-                    <option value="<?php echo $city['id']; ?>" <?php echo set_select('state', $city['id'], $city['id'] == $user['state_id']); ?>>
-                      <?php echo $city['name']; ?>
-                    </option>
+                                <!-- <?php if ($city['state_id'] == $user['state_id']): ?> -->
+                      <option value="<?php echo $city['id']; ?>" <?php echo set_select('state', $city['id'], $city['id'] == $user['state_id']); ?>>
+                        <?php echo $city['name']; ?>
+                      </option>
+                      <!-- <?php endif; ?> -->
                   <?php endforeach; ?>
                 </select>
               </div>
@@ -253,7 +259,7 @@
             <div class="col-md-6 mb-3">
               <!-- File Upload -->
               <div class="form-group" style="margin-bottom:10px">
-                <label for="file">Upload File</label>
+                <label for="file">Upload File*</label>
                 <input type="file" name="file" id="file" value="" class="form-control">
                 <img src="" id="showImageEdit" style="width:150px">
               </div>
@@ -273,7 +279,7 @@
 <!-- Create Modal -->
 <div class="modal fade" id="createdata" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
   aria-labelledby="createdataLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog  modal-xl modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="createdataLabel">Create New Entry</h1>
@@ -285,88 +291,90 @@
             <div class="col-md-6 mb-3">
               <!--     -->
               <div class="form-group">
-                <label for="firstname">First Name</label>
+                <label for="firstname">First Name*</label>
                 <input type="text" name="firstname" id="firstname" placeholder="Enter First Name" value=""
-                  class="form-control">
+                  class="form-control" required>
               </div>
             </div>
             <div class="col-md-6 mb-3">
               <div class="form-group">
-                <label for="lastname">Last Name</label>
-                <input type="text" name="lastname" placeholder="Enter Last Name" value="" class="form-control">
+                <label for="lastname">Last Name*</label>
+                <input type="text" name="lastname" placeholder="Enter Last Name" value="" class="form-control" required>
               </div>
             </div>
 
             <div class="col-md-6 mb-3">
               <div class="form-group" style="padding-bottom: 10px">
-                <label for="email">Email</label>
-                <input type="email" name="email" placeholder="Enter Email" value="" class="form-control">
+                <label for="email">Email*</label>
+                <input type="email" name="email" placeholder="Enter Email" value="" class="form-control" required>
 
               </div>
             </div>
             <div class="col-md-6 mb-3">
               <!-- Gender -->
               <div class="form-group">
-                <label for="gender">Gender</label><br>
+                <label for="gender">Gender*</label><br>
 
-                <input type="radio" name="gender" id="male" value="Male">
+                <input type="radio" name="gender" id="male" value="Male" required>
                 Male
 
-                <input type="radio" name="gender" id="female" value="Female">
+                <input type="radio" name="gender" id="female" value="Female" required>
                 Female<br>
               </div>
             </div>
             <div class="col-md-6 mb-3">
               <!-- DOB-->
               <div class="form-group">
-                <label for="dob">Date of Birth</label>
-                <input type="date" name="dob" class="form-control" max="<?php echo date('Y-m-d'); ?>">
+                <label for="dob">Date of Birth*</label>
+                <input type="date" name="dob" class="form-control" max="<?php echo date('Y-m-d'); ?>" required>
 
               </div>
             </div>
             <div class="col-md-6 mb-3">
               <!-- Mobile Number -->
               <div class="form-group">
-                <label for="mobile">Mobile Number</label>
-                <input type="tel" name="mobile" pattern="[/^(?!0{10})[0-9]{10}$/]" placeholder="Enter 10 Digit Mobile Number" value="" class="form-control"
-                  maxlength="10">
+                <label for="mobile">Mobile Number*</label>
+                <input type="text" name="mobile" pattern="[1-9]{1}[0-9]{9}"
+                  oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="Enter 10 Digit Mobile Number"
+                  value="" class="form-control" maxlength="10" required>
+
               </div>
             </div>
             <div class="col-md-6 mb-3">
               <!-- State -->
-              <div class="form-group">
-                <label for="state">State</label>
-                <select name="state" id="state" class="form-control" onchange="getCities()">
+              <div class="form-group-">
+                <label for="state">State*</label>
+                <select name="state" id="state" class="form-select" onchange="getCities()">
                   <option value="" selected>Select State</option>
                   <?php foreach ($states as $state): ?>
                     <option value="<?php echo $state['id']; ?>">
                       <?php echo $state['name']; ?>
                     </option>
                   <?php endforeach; ?>
-                </select>
+                </select required>
 
               </div>
             </div>
             <div class="col-md-6 mb-3">
               <!-- City-->
               <div class="form-group" style="padding-bottom:10px">
-                <label for="city">City</label>
-                <select name="city" id="city" class="form-control">
+                <label for="city">City*</label>
+                <select name="city" id="city" class="form-select" disabled>
                   <option value="" selected>Select City</option>
                   <?php foreach ($cities as $city): ?>
                     <option value="<?php echo $city['id']; ?>">
                       <?php echo $city['name']; ?>
                     </option>
                   <?php endforeach; ?>
-                </select>
+                </select required>
               </div>
             </div>
 
             <div class="col-md-6 mb-3">
               <!-- File Upload -->
               <div class="form-group" style="margin-bottom:10px">
-                <label for="file">Upload File</label>
-                <input type="file" name="file" value="" class="form-control">
+                <label for="file">Upload File*</label>
+                <input type="file" name="file" value="" class="form-control" required>
 
               </div>
             </div>
@@ -383,6 +391,41 @@
 
 
 <script>
+
+  // create Dropdown
+
+  document.addEventListener("DOMContentLoaded", function (params) {
+    const stateDropDown = document.getElementById("state");
+    const cityDropDown = document.getElementById("city");
+
+    stateDropDown.addEventListener("change", function (params) {
+      const selectedState = this.value;
+
+      //enable states on cond.
+      if (selectedState) {
+        cityDropDown.disabled = false;
+      } else {
+        cityDropDown.disabled = true;
+      }
+    })
+  })
+
+  // Edit Dropdown
+    // document.addEventListener("DOMContentLoaded",function (params) {
+    //   const stateDropDown =document.getElementById("stateEdit");
+    //   const cityDropDown =document.getElementById("cityEdit");
+
+    //   stateDropDown.addEventListener("change",function (params) {
+    //     const selectedState = this.value;
+
+        // //enable states on cond.
+        // if(selectedState){
+        //   cityDropDown.disabled =false;
+        // }else{
+        //   cityDropDown.disabled =true;
+        // }
+    //   })
+    // })
 
   function getCities() {
     const stateId = document.getElementById('state').value; // Get the selected state ID
@@ -406,25 +449,26 @@
   }
 
   function getCitiesEdit() {
-    const stateId = document.getElementById('stateEdit').value; // Get the selected state ID
-    console.log(stateId);
+          const stateId = document.getElementById('stateEdit').value; // Get the selected state ID
+          console.log(stateId);
 
-    $.ajax({
-      url: "<?php echo base_url() ?>index.php/user/getCitiesByState/" + stateId,
-      success: function (data) {
-        let obj = jQuery.parseJSON(data);
-        console.log(obj);
+          $.ajax({
+            url: "<?php echo base_url() ?>index.php/user/getCitiesByState/" + stateId,
+            success: function (data) {
+              let obj = jQuery.parseJSON(data);
+              console.log(obj);
 
-        let city = document.getElementById('cityEdit');
-        city.innerHTML = '';
+              let city = document.getElementById('cityEdit');
+              city.innerHTML = '';
 
-        obj.forEach(element => {
-          city.innerHTML += '<option value="' + element.id + '">' + element.name + '</option>';
-        });
-      }
-    })
+              obj.forEach(element => {
+                city.innerHTML += '<option value="' + element.id + '">' + element.name + '</option>';
+              });
+            }
+          })
 
-  }
+        }
+        
 
 
   function getUserData(userId) {
@@ -446,8 +490,7 @@
           female.checked = true;
         }
 
-
-
+        
         $("#firstnameEdit").val(obj.firstname);
         $("#lastnameEdit").val(obj.lastname);
         $("#emailEdit").val(obj.email);
@@ -463,8 +506,6 @@
         img.src = '';
         if (obj.profile_picture != null) {
           img.src = "<?php echo base_url(); ?>uploads/" + obj.profile_picture
-        }else{
-          img.src = "<?php echo base_url(); ?>uploads/users-vector-icon-png_260862.jpg" 
         }
         // profile_picture
 

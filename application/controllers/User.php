@@ -8,12 +8,54 @@ class User extends CI_Controller
   }
   public function index()
   {
+    $this->load->library('pagination');
+
     $this->load->model("User_model");
-    $users = $this->User_model->all();
+
+    $config = array();
+
+    $config['base_url'] = base_url('index.php/user/index');
+    $config['total_rows'] = $this->User_model->countAllUsers();
+    $config['per_page'] = 5;
+    $config['uri_segment'] = 3;
+
+
+    $config['full_tag_open'] = '<ul class="pagination">';
+    $config['full_tag_close'] = '</ul>';
+    $config['first_link'] = 'First';
+    $config['last_link'] = 'Last';
+    $config['first_tag_open'] = '<li class="page-item"><span class="page-link">';
+    $config['first_tag_close'] = '</span></li>';
+    $config['prev_link'] = '&laquo';
+    $config['prev_tag_open'] = '<li class="page-item"><span class="page-link">';
+    $config['prev_tag_close'] = '</span></li>';
+    $config['next_link'] = '&raquo';
+    $config['next_tag_open'] = '<li class="page-item"><span class="page-link">';
+    $config['next_tag_close'] = '</span></li>';
+    $config['last_tag_open'] = '<li class="page-item"><span class="page-link">';
+    $config['last_tag_close'] = '</span></li>';
+    $config['cur_tag_open'] = '<li class="page-item active"><a class="page-link" href="#">';
+    $config['cur_tag_close'] = '</a></li>';
+    $config['num_tag_open'] = '<li class="page-item"><span class="page-link">';
+    $config['num_tag_close'] = '</span></li>';
+
+
+
+    $this->pagination->initialize($config);
+
+    $page = ($this->uri->segment(3)) ? $this->uri->segment(3) : 0;
+
+    // $users = $this->User_model->getPaginatedUsers($config['per_page'], $page);
+
+    $users = $this->User_model->all($config['per_page'], $page);
     $data = array();
     $data['users'] = $users;
+    $data['pagination_links'] = $this->pagination->create_links(); // Generate pagination links
     $data['states'] = $this->User_model->getStates(); // Fetch states for the dropdown
     $data['cities'] = $this->User_model->getCities(); // Fetch cities
+    $data['page'] = $page;
+
+
     $this->load->view('list', $data);
   }
 
@@ -88,7 +130,7 @@ class User extends CI_Controller
 
   public function edit($userId)
   {
-    
+
     $this->load->model('User_model');
     $user = $this->User_model->getUser($userId);
     $data = array();
@@ -106,7 +148,7 @@ class User extends CI_Controller
     $this->form_validation->set_rules("city", "City", "required");
 
     if ($this->form_validation->run() == FALSE) {
-      $this->load->view('edit', $data);
+      $this->load->view('list', $data);
     } else {
       // Update user in database
       $formArray = array();
@@ -161,7 +203,7 @@ class User extends CI_Controller
           if (!empty($user['profile_picture']) && file_exists('./uploads/' . $user['profile_picture'])) {
             unlink('./uploads/' . $user['profile_picture']);
           }
-        } 
+        }
       }
 
       $this->User_model->updateUser($userId, $formArray);

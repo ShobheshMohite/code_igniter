@@ -6,20 +6,22 @@ class User_model extends CI_Model
     $this->db->insert('users', $formArray); // INSERT INTO users(name,email) values(?,?);
   }
 
-  public function all()
+  public function countAllUsers()
   {
-      $this->db->select('users.*, states.name as state_name, cities.name as city_name');
-      $this->db->from('users');
-      $this->db->join('states', 'users.state_id = states.id', 'left');
-      $this->db->join('cities', 'users.city_id = cities.id', 'left');
-      $query = $this->db->get();
-      return $query->result_array();  
+    return $this->db->count_all('users'); // Count all records in 'users' table
   }
-  
 
-  function getIdPass(){
-
+  public function all($limit, $offset)
+  {
+    $this->db->select('users.*, states.name as state_name, cities.name as city_name');
+    $this->db->from('users');
+    $this->db->join('states', 'users.state_id = states.id', 'left');
+    $this->db->join('cities', 'users.city_id = cities.id', 'left');
+    $this->db->limit($limit, $offset);
+    $query = $this->db->get();
+    return $query->result_array();
   }
+
 
   function getUser($userId)
   {
