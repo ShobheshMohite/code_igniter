@@ -16,7 +16,7 @@ class User extends CI_Controller
 
     $config['base_url'] = base_url('index.php/user/index');
     $config['total_rows'] = $this->User_model->countAllUsers();
-    $config['per_page'] = 1;
+    $config['per_page'] = 3;
     $config['uri_segment'] = 3;
 
 
@@ -50,7 +50,7 @@ class User extends CI_Controller
     $users = $this->User_model->all($config['per_page'], $page);
     $data = array();
     $data['users'] = $users;
-    $data['pagination_links'] = $this->pagination->create_links(); // Generate pagination links
+    $data['pagination_links'] = $this->pagination->create_links(); 
     $data['states'] = $this->User_model->getStates(); // Fetch states for the dropdown
     $data['cities'] = $this->User_model->getCities(); // Fetch cities
     $data['page'] = $page;

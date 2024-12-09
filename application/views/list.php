@@ -20,8 +20,8 @@
       $fileError = $this->session->flashdata('fileError');
       if ($fileError) {
         ?>
-              <div class="alert alert-danger"><?php echo $fileError; ?></div>
-            <?php
+            <div class="alert alert-danger"><?php echo $fileError; ?></div>
+          <?php
       }
       ?>
       <?php
@@ -142,7 +142,7 @@
         <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
       </div>
       <div class="modal-body">
-        <form method="post" id="deleteID" name="deleteUser"
+        <form method="post"  name="deleteUser"
           action="<?php echo base_url() . 'index.php/user/delete/' . $user['user_id']; ?>"
           enctype="multipart/form-data">
           <div class="row">
@@ -232,7 +232,7 @@
                 <select name="state" id="stateEdit" class="form-select" onchange="getCitiesEdit()">
                   <option value="">Select State</option>
                   <?php foreach ($states as $state): ?>
-                                                <option value="<?php echo $state['id']; ?>" <?php echo $state['id'] == $user['state_id'] ? 'selected' : ''; ?>>
+                        <option value="<?php echo $state['id']; ?>" <?php echo $state['id'] == $user['state_id'] ? 'selected' : ''; ?>>
                       <?php echo $state['name']; ?>
                     </option>
                   <?php endforeach; ?>
@@ -247,7 +247,7 @@
                 <select name="city" id="cityEdit" class="form-select">
                   <option value="">Select City</option>
                   <?php foreach ($cities as $city): ?>
-                                <!-- <?php if ($city['state_id'] == $user['state_id']): ?> -->
+                        <!-- <?php if ($city['state_id'] == $user['state_id']): ?> -->
                       <option value="<?php echo $city['id']; ?>" <?php echo $city['id'] == $user['city_id'] ? 'selected' : ''; ?>>
                         <?php echo $city['name']; ?>
                       </option>
@@ -505,7 +505,7 @@
           // Preselect the User's City Once Loaded
           setTimeout(() => {
             $("#cityEdit").val(user.city_id);
-          }, 100); // Add a slight delay to ensure cities are loaded
+          }, 100); // delay
         },
         error: function () {
           alert("Unable to fetch user data. Please try again.");
@@ -678,4 +678,3 @@
   }
 
 </script> -->
-
